@@ -4,6 +4,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import AuthTabs from './components/auth/AuthTabs';
 import AuthenticatedView from './components/auth/AuthenticatedView';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
+import ManagerDashboard from './components/manager/ManagerDashboard';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from './constants/storageKeys';
@@ -97,6 +98,10 @@ function App() {
 
     if (user?.role === 'Employee') {
       return <EmployeeDashboard user={user} token={token} onLogout={handleLogout} />;
+    }
+
+    if (user?.role === 'Manager') {
+      return <ManagerDashboard user={user} token={token} onLogout={handleLogout} />;
     }
 
     return <AuthenticatedView user={user} onLogout={handleLogout} />;
