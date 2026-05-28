@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { createAdminUser, deleteAdminUser, fetchAdminUsers, updateAdminUserRole } from '../../services/adminService';
+import {
+  createAdminUser,
+  deleteAdminUser,
+  fetchAdminTaskStatistics,
+  fetchAdminTasks,
+  fetchAdminUsers,
+  updateAdminUserRole,
+} from '../../services/adminService';
 
 const initialForm = {
   name: '',
@@ -13,15 +20,23 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const loadUsers = useCallback(async () => {
+  const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const data = await fetchAdminUsers(token);
-      setUsers(data);
+      const [userData, statsData, taskData] = await Promise.all([
+        fetchAdminUsers(token),
+        fetchAdminTaskStatistics(token),
+        fetchAdminTasks(token),
+      ]);
+      setUsers(userData);
+      setStats(statsData);
+      setTasks(taskData);
     } catch (err) {
       setError(err.message);
       notify('error', 'Load failed', err.message);
@@ -31,8 +46,8 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
   }, [token]);
 
   useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+    loadDashboard();
+  }, [loadDashboard]);
 
   const handleCreateUser = async (event) => {
     event.preventDefault();
@@ -45,7 +60,7 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
       setForm(initialForm);
       setMessage('User created successfully.');
       notify('success', 'User created', 'A new user was created successfully.');
-      await loadUsers();
+      await loadDashboard();
     } catch (err) {
       setError(err.message);
       notify('error', 'Create failed', err.message);
@@ -62,7 +77,7 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
       await updateAdminUserRole(token, userId, nextRole);
       setMessage('Role updated successfully.');
       notify('success', 'Role updated', 'The user role was changed successfully.');
-      await loadUsers();
+      await loadDashboard();
     } catch (err) {
       setError(err.message);
       notify('error', 'Update failed', err.message);
@@ -77,7 +92,7 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
       await deleteAdminUser(token, userId);
       setMessage('User deleted successfully.');
       notify('success', 'User deleted', 'The user was removed successfully.');
-      await loadUsers();
+      await loadDashboard();
     } catch (err) {
       setError(err.message);
       notify('error', 'Delete failed', err.message);
@@ -100,6 +115,15 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
 
         {message ? <div className="alert success">{message}</div> : null}
         {error ? <div className="alert error">{error}</div> : null}
+
+        <section className="stats-grid">
+          <StatCard label="Total Tasks" value={stats?.totalTasks ?? 0} />
+          <StatCard label="Assigned" value={stats?.assignedTasks ?? 0} />
+          <StatCard label="Unassigned" value={stats?.unassignedTasks ?? 0} />
+          <StatCard label="Pending" value={stats?.byStatus?.pendingTasks ?? 0} />
+          <StatCard label="In Progress" value={stats?.byStatus?.inProgressTasks ?? 0} />
+          <StatCard label="Completed" value={stats?.byStatus?.completedTasks ?? 0} />
+        </section>
 
         <div className="admin-grid">
           <section className="panel-box">
@@ -158,7 +182,7 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
           <section className="panel-box admin-users-panel">
             <div className="panel-header">
               <h2>All Users</h2>
-              <button className="secondary-button" type="button" onClick={loadUsers} disabled={loading}>
+              <button className="secondary-button" type="button" onClick={loadDashboard} disabled={loading}>
                 {loading ? 'Loading...' : 'Refresh'}
               </button>
             </div>
@@ -213,7 +237,66 @@ export default function AdminDashboard({ user, token, onLogout, notify = () => {
             </div>
           </section>
         </div>
+
+        <section className="panel-box admin-tasks-panel">
+          <div className="panel-header">
+            <h2>All Tasks</h2>
+            <button className="secondary-button" type="button" onClick={loadDashboard} disabled={loading}>
+              {loading ? 'Loading...' : 'Refresh'}
+            </button>
+          </div>
+
+          <div className="table-wrap">
+            <table className="simple-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Assigned To</th>
+                  <th>Created By</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Due Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task) => {
+                  const taskId = task._id || task.id;
+                  return (
+                    <tr key={taskId}>
+                      <td>
+                        <div className="task-title">{task.title}</div>
+                        <div className="task-subtext">{task.description || 'No description'}</div>
+                      </td>
+                      <td>{task.assignedEmployee?.name || '-'}</td>
+                      <td>{task.createdBy?.name || '-'}</td>
+                      <td>{task.priority}</td>
+                      <td>{task.status}</td>
+                      <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
+                    </tr>
+                  );
+                })}
+
+                {!loading && tasks.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="empty-state">
+                      No tasks found.
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value }) {
+  return (
+    <div className="stat-card">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }

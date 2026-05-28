@@ -203,6 +203,36 @@ h1 {
   margin-bottom: 20px;
 }
 
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-tasks-panel {
+  margin-top: 20px;
+}
+
+.stat-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.stat-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.stat-card strong {
+  font-size: 1.3rem;
+  color: #0f172a;
+}
+
 .search-box label {
   display: grid;
   gap: 8px;
@@ -409,6 +439,10 @@ h1 {
 }
 
 @media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .profile-grid {
     grid-template-columns: 1fr;
   }
@@ -463,6 +497,10 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
   .dashboard-top,
   .panel-header {
     flex-direction: column;
@@ -486,6 +524,10 @@ h1 {
 
   .simple-table {
     min-width: 520px;
+  }
+
+  .admin-tasks-panel {
+    margin-top: 18px;
   }
 
   .simple-table th,
