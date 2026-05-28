@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.css';
+import AdminDashboard from './components/admin/AdminDashboard';
 import AuthTabs from './components/auth/AuthTabs';
 import AuthenticatedView from './components/auth/AuthenticatedView';
 import LoginForm from './components/auth/LoginForm';
@@ -89,6 +90,10 @@ function App() {
   };
 
   if (isAuthenticated) {
+    if (user?.role === 'Admin') {
+      return <AdminDashboard user={user} token={token} onLogout={handleLogout} />;
+    }
+
     return <AuthenticatedView user={user} onLogout={handleLogout} />;
   }
 
