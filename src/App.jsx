@@ -3,6 +3,7 @@ import './App.css';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AuthTabs from './components/auth/AuthTabs';
 import AuthenticatedView from './components/auth/AuthenticatedView';
+import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from './constants/storageKeys';
@@ -92,6 +93,10 @@ function App() {
   if (isAuthenticated) {
     if (user?.role === 'Admin') {
       return <AdminDashboard user={user} token={token} onLogout={handleLogout} />;
+    }
+
+    if (user?.role === 'Employee') {
+      return <EmployeeDashboard user={user} token={token} onLogout={handleLogout} />;
     }
 
     return <AuthenticatedView user={user} onLogout={handleLogout} />;
