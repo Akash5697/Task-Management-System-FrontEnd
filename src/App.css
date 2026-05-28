@@ -167,7 +167,17 @@ h1 {
   padding: 32px;
 }
 
+.employee-dashboard {
+  padding: 32px;
+}
+
 .admin-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
+
+.employee-grid {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 20px;
@@ -247,6 +257,44 @@ h1 {
   line-height: 1.6;
 }
 
+.profile-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-row {
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.profile-row span {
+  display: block;
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.profile-row strong {
+  color: #0f172a;
+}
+
+.task-title {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.task-subtext {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.tasks-note {
+  margin-bottom: 16px;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -311,8 +359,13 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .employee-grid {
+    grid-template-columns: 1fr;
+  }
+
   .auth-panel,
   .admin-dashboard,
+  .employee-dashboard,
   .dashboard-card {
     padding: 24px;
   }
