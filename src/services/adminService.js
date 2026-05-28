@@ -4,6 +4,14 @@ export function fetchAdminUsers(token) {
   return apiRequest('/api/admin/users', { token });
 }
 
+export function fetchAdminTaskStatistics(token) {
+  return apiRequest('/api/admin/task-statistics', { token });
+}
+
+export function fetchAdminTasks(token) {
+  return apiRequest('/api/tasks', { token });
+}
+
 export function createAdminUser(token, payload) {
   return apiRequest('/api/admin/users', {
     method: 'POST',
