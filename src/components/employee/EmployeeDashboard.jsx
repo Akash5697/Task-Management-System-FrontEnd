@@ -5,7 +5,7 @@ import {
   updateEmployeeTaskStatus,
 } from '../../services/employeeService';
 
-export default function EmployeeDashboard({ user, token, onLogout }) {
+export default function EmployeeDashboard({ user, token, onLogout, notify = () => {} }) {
   const [profile, setProfile] = useState(user);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,7 @@ export default function EmployeeDashboard({ user, token, onLogout }) {
       setTasks(taskData);
     } catch (err) {
       setError(err.message);
+      notify('error', 'Load failed', err.message);
     } finally {
       setLoading(false);
     }
@@ -45,8 +46,10 @@ export default function EmployeeDashboard({ user, token, onLogout }) {
         current.map((task) => (String(task._id || task.id) === String(taskId) ? updatedTask : task)),
       );
       setMessage('Task status updated.');
+      notify('success', 'Task updated', 'Task status changed successfully.');
     } catch (err) {
       setError(err.message);
+      notify('error', 'Update failed', err.message);
     }
   };
 

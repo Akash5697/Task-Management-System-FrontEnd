@@ -27,7 +27,7 @@ function buildTaskDraft(task) {
   };
 }
 
-export default function ManagerDashboard({ user, token, onLogout }) {
+export default function ManagerDashboard({ user, token, onLogout, notify = () => {} }) {
   const [profile, setProfile] = useState(user);
   const [tasks, setTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
@@ -112,6 +112,7 @@ export default function ManagerDashboard({ user, token, onLogout }) {
       setAssignSelections(nextAssignSelections);
     } catch (err) {
       setError(err.message);
+      notify('error', 'Load failed', err.message);
     } finally {
       setLoading(false);
     }
@@ -135,9 +136,11 @@ export default function ManagerDashboard({ user, token, onLogout }) {
       });
       setForm(initialTaskForm);
       setMessage('Task created successfully.');
+      notify('success', 'Task created', 'The task was created successfully.');
       await loadData();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Create failed', err.message);
     }
   };
 
@@ -154,9 +157,11 @@ export default function ManagerDashboard({ user, token, onLogout }) {
     try {
       await assignManagerTask(token, taskId, employeeId);
       setMessage('Task assigned successfully.');
+      notify('success', 'Task assigned', 'Task assigned to employee successfully.');
       await loadData();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Assign failed', err.message);
     }
   };
 
@@ -168,6 +173,7 @@ export default function ManagerDashboard({ user, token, onLogout }) {
       const draft = editDrafts[taskId];
       if (!draft) {
         setError('Task data not found.');
+        notify('error', 'Update failed', 'Task data not found.');
         return;
       }
 
@@ -179,9 +185,11 @@ export default function ManagerDashboard({ user, token, onLogout }) {
         dueDate: draft.dueDate || undefined,
       });
       setMessage('Task updated successfully.');
+      notify('success', 'Task updated', 'Task details were updated successfully.');
       await loadData();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Update failed', err.message);
     }
   };
 
@@ -204,8 +212,10 @@ export default function ManagerDashboard({ user, token, onLogout }) {
         return next;
       });
       setMessage('Task deleted successfully.');
+      notify('success', 'Task deleted', 'Task removed from the list.');
     } catch (err) {
       setError(err.message);
+      notify('error', 'Delete failed', err.message);
     }
   };
 

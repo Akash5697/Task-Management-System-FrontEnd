@@ -8,7 +8,7 @@ const initialForm = {
   role: 'Employee',
 };
 
-export default function AdminDashboard({ user, token, onLogout }) {
+export default function AdminDashboard({ user, token, onLogout, notify = () => {} }) {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,7 @@ export default function AdminDashboard({ user, token, onLogout }) {
       setUsers(data);
     } catch (err) {
       setError(err.message);
+      notify('error', 'Load failed', err.message);
     } finally {
       setLoading(false);
     }
@@ -43,9 +44,11 @@ export default function AdminDashboard({ user, token, onLogout }) {
       await createAdminUser(token, form);
       setForm(initialForm);
       setMessage('User created successfully.');
+      notify('success', 'User created', 'A new user was created successfully.');
       await loadUsers();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Create failed', err.message);
     } finally {
       setSaving(false);
     }
@@ -58,9 +61,11 @@ export default function AdminDashboard({ user, token, onLogout }) {
     try {
       await updateAdminUserRole(token, userId, nextRole);
       setMessage('Role updated successfully.');
+      notify('success', 'Role updated', 'The user role was changed successfully.');
       await loadUsers();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Update failed', err.message);
     }
   };
 
@@ -71,9 +76,11 @@ export default function AdminDashboard({ user, token, onLogout }) {
     try {
       await deleteAdminUser(token, userId);
       setMessage('User deleted successfully.');
+      notify('success', 'User deleted', 'The user was removed successfully.');
       await loadUsers();
     } catch (err) {
       setError(err.message);
+      notify('error', 'Delete failed', err.message);
     }
   };
 
